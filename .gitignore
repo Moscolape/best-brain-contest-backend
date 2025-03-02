@@ -4,6 +4,5 @@
 .env.production
 ".env" 
 
-# Logs
-
-node_modules
+# Ignore dependencies
+node_modules/

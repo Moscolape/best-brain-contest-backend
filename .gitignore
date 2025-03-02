@@ -3,3 +3,7 @@
 .env.local
 .env.production
 ".env" 
+
+# Logs
+
+node_modules

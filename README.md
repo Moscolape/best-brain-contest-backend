@@ -1,1 +1,1 @@
-"# best-brain-contest-backend" 
+# best-brain-contest-backend

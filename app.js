@@ -7,7 +7,22 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+const allowedOrigins = ["http://localhost:5173", "https://bestbraincontest.org"];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, origin); // ✅ Allow the request if the origin is in the list
+    } else {
+      callback(new Error("Not allowed by CORS")); // ❌ Reject if not in the list
+    }
+  },
+  methods: ["POST", "GET", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
+
 app.use("/uploads", express.static("uploads")); // Serve uploaded images
 
 // Connect to MongoDB

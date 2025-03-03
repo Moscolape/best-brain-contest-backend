@@ -1,40 +1,25 @@
 const express = require("express");
-const multer = require("multer");
-const path = require("path");
 const { registerTeacher, getAllTeachers } = require("../controllers/teacherController");
+const upload = require("../config/multerConfig"); // Cloudinary Multer config
 
 const router = express.Router();
 
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const timestamp = new Date().toISOString().replace(/:/g, "-");
-    cb(null, `${timestamp}-${file.originalname}`);
-  },
-});
-
-const fileFilter = (req, file, cb) => {
-  if (["image/png", "image/jpg", "image/jpeg"].includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 1 * 1024 * 1024 }, // Limit file size to 1MB
-}).single("uploadPassport");
-
 // Routes
-router.post("/register", upload, (req, res, next) => {
-  console.log("File uploaded:", req.file); // Check if file exists
-  next();
-}, registerTeacher);
+router.post("/register", upload.single("uploadPassport"), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No file uploaded!" });
+    }
+
+    console.log("Uploaded File to Cloudinary:", req.file.path); // Cloudinary URL
+    req.body.passportUrl = req.file.path; // Attach Cloudinary URL to req.body
+
+    next(); // Proceed to registerTeacher
+  } catch (error) {
+    console.error("Upload error:", error);
+    return res.status(500).json({ success: false, message: "Upload failed" });
+  }
+});
 
 router.get("/teachers", getAllTeachers);
 

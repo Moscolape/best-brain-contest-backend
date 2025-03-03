@@ -23,7 +23,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use("/uploads", express.static("uploads")); // Serve uploaded images
+
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

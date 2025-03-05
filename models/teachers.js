@@ -6,8 +6,13 @@ const teacherSchema = new mongoose.Schema({
   dob: { type: String, required: true },
   phoneNumber: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  stateOrigin: { type: String, required: true, unique: true },
+  lgaOrigin: { type: String, required: true, unique: true },
+  stateResidence: { type: String, required: true, unique: true },
+  lgaResidence: { type: String, required: true, unique: true },
   schoolName: { type: String, required: true },
   schoolAddress: { type: String, required: true },
+  state: { type: String, required: true },
   lga: { type: String, required: true },
   contactPhone: { type: String, required: true },
   contactEmail: { type: String, required: true },
@@ -26,7 +31,7 @@ const teacherSchema = new mongoose.Schema({
   certifications: { type: String },
   motivation: { type: String, required: true },
   declaration: { type: Boolean, required: true },
-  uploadPassport: { type: String }, // Store file path
+  uploadPassport: { type: String },
 }, { timestamps: true });
 
 const Teacher = mongoose.model("Teacher", teacherSchema);

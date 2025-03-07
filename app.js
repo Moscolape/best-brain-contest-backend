@@ -8,7 +8,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "https://bestbraincontest.org"];
+const allowedOrigins = ["http://localhost:5173", "https://bestbraincontest.org", "https://www.bestbraincontest.org"];
 
 app.use(cors({
   origin: (origin, callback) => {

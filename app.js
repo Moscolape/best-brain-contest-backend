@@ -4,6 +4,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const teacherRoutes = require("./routes/teacherRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const authRoutes = require("./routes/userRoutes");
+const beneficiaryRoutes = require("./routes/beneficiaryRoutes");
 
 const app = express();
 app.use(express.json());
@@ -24,7 +26,6 @@ app.use(cors({
 }));
 
 
-
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB Connected"))
@@ -33,6 +34,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Use routes
 app.use("/api", teacherRoutes);
 app.use("/api", contactRoutes);
+app.use("/api", authRoutes);
+app.use("/api", beneficiaryRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

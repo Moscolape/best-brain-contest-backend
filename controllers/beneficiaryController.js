@@ -159,8 +159,7 @@ exports.updateBeneficiary = async (req, res) => {
     // Save previous data into UpdateHistory collection
     await UpdateHistory.create({
       beneficiaryCode: decodedCode,
-      previousData,
-      updatedBy: req.user?.email || "System", // Store user info if available
+      previousData
     });
 
     // Update only the provided fields
@@ -189,7 +188,7 @@ exports.getBeneficiaryUpdateHistory = async (req, res) => {
   
       const history = await UpdateHistory.find({ beneficiaryCode: decodedCode }).sort({ updatedAt: -1 });
   
-      if (!history.length) {
+      if (!history) {
         return res.status(404).json({ message: "No update history found for this beneficiary" });
       }
   

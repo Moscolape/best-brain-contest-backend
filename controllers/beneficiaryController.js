@@ -70,13 +70,16 @@ exports.registerBeneficiary = async (req, res) => {
 exports.getAllBeneficiaries = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const perPage = parseInt(req.query.perPage) || 10;
-  const { state, sortBy } = req.query; // Extract query parameters
+  const { state, sortBy, year } = req.query; // Extract year from query
 
   try {
     let filter = {}; // Default: Fetch all
 
     // Apply state filter if provided
     if (state) filter.state = state;
+
+    // Apply year filter if provided
+    if (year) filter.year = year;
 
     // Determine sorting order
     let sortOptions = {}; // Default: No sorting
@@ -85,7 +88,7 @@ exports.getAllBeneficiaries = async (req, res) => {
       if (sortBy === "codeNo") sortOptions = { codeNo: 1 }; // Sort by Code No (Ascending)
     }
 
-    // **Fix: Count only filtered beneficiaries**
+    // Count only filtered beneficiaries
     const totalItems = await Beneficiary.countDocuments(filter);
 
     // Fetch paginated and sorted data

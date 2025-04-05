@@ -52,7 +52,7 @@ exports.loginUser = async (req, res) => {
     );
 
     res.status(200).json({ 
-      message: "Login successful", 
+      message: "Login successful. Redirecting...", 
       token, 
       roleAccess: user.roleAccess || "No role assigned" // Prevent undefined values
     });

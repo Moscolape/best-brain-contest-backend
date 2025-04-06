@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 
 const questionSchema = new Schema(
   {
-    week: { type: String, required: true },
+    day: { type: String, required: true },
     type: {
       type: String,
       required: true,
@@ -13,7 +13,6 @@ const questionSchema = new Schema(
     },
     prompt: { type: String, required: true },
     points: { type: Number, default: 10 },
-
     options: {
       type: [String],
       default: undefined,
@@ -22,7 +21,6 @@ const questionSchema = new Schema(
       type: [String],
       default: undefined,
     },
-
     correctAnswer: {
       type: String,
       default: undefined,
@@ -30,5 +28,6 @@ const questionSchema = new Schema(
   },
   { timestamps: true }
 );
+
 
 module.exports = mongoose.model('Question', questionSchema);

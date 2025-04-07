@@ -17,7 +17,7 @@ router.get('/admin/questions', getAllQuestions);
 
 router.post('/quiz/submit', submitQuiz);
 
-router.post('/quiz-submissions', getQuizSubmissions);
+router.get('/quiz-submissions', getQuizSubmissions);
 
 router.get('/admin/questions/:id', getQuestionById);
 

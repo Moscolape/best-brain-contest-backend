@@ -25,7 +25,7 @@ exports.registerStudent = async (req, res) => {
     // Create new student entry
     const newStudent = new WeeklyQuizModel({
       ...req.body,
-      quizCode
+      quizCode,
     });
 
     await newStudent.save();
@@ -98,14 +98,14 @@ exports.getStudentById = async (req, res) => {
 
 exports.verifyQuizAccess = async (req, res) => {
   console.log("Route hit");
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { email, quizCode } = req.body;
-
-  console.log(email);
+  console.log("Student Email:", email);
 
   try {
     const student = await WeeklyQuizModel.findOne({ email, quizCode });
@@ -117,17 +117,34 @@ exports.verifyQuizAccess = async (req, res) => {
     const today = new Date().toISOString().split("T")[0];
 
     const alreadySubmitted = await QuizSubmissionModel.findOne({
-      email,
+      email: student._id,
       weekIdentifier: today,
     });
 
-    console.log(alreadySubmitted);
+    console.log("Already Submitted:", alreadySubmitted);
 
     if (alreadySubmitted) {
-      return res.status(400).json({ message: "You have already taken this week's quiz!!" });
+      return res
+        .status(400)
+        .json({ message: "You have already taken this week's quiz!" });
     }
 
-    res.status(200).json({ message: "Access granted. Proceeding to the quiz...", student });
+    res.status(200).json({
+      message: "Access granted. Proceeding to the quiz...",
+      student: {
+        fullName: student.fullName,
+        gender: student.gender,
+        dob: student.dob,
+        myClass: student.myClass,
+        phoneNumber: student.phoneNumber,
+        schoolName: student.schoolName,
+        stateOfSchool: student.stateOfSchool,
+        townOfSchool: student.townOfSchool,
+        lgaOfSchool: student.lgaOfSchool,
+        schoolNumber: student.schoolNumber,
+        email: student.email,
+      },
+    });
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -158,12 +175,10 @@ exports.registerTeacher = async (req, res) => {
     });
 
     await newTeacher.save();
-    res
-      .status(201)
-      .json({
-        message: "Teacher registered successfully",
-        teacher: newTeacher,
-      });
+    res.status(201).json({
+      message: "Teacher registered successfully",
+      teacher: newTeacher,
+    });
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -193,12 +208,10 @@ exports.registerAnambraTeacher = async (req, res) => {
     });
 
     await newTeacher.save();
-    res
-      .status(201)
-      .json({
-        message: "Teacher registered successfully",
-        teacher: newTeacher,
-      });
+    res.status(201).json({
+      message: "Teacher registered successfully",
+      teacher: newTeacher,
+    });
   } catch (error) {
     console.error("Server Error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });

@@ -258,32 +258,54 @@ exports.submitQuiz = async (req, res) => {
 
 exports.getQuizSubmissions = async (req, res) => {
   try {
-    const { weekIdentifier } = req.query;
+    const { weekIdentifier, page = 1, limit = 10 } = req.query;
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    if (isNaN(pageNum) || pageNum <= 0) {
+      return res.status(400).json({ message: "Invalid page number" });
+    }
+    if (isNaN(limitNum) || limitNum <= 0) {
+      return res.status(400).json({ message: "Invalid limit number" });
+    }
 
     const filter = {};
     if (weekIdentifier) {
       filter.weekIdentifier = weekIdentifier;
     }
 
+    const skip = (pageNum - 1) * limitNum;
+
     const submissions = await QuizSubmissionModel.find(filter)
       .populate(
         "email",
         "fullName gender dob myClass phoneNumber schoolName stateOfSchool townOfSchool lgaOfSchool schoolNumber"
       )
+      .skip(skip)
+      .limit(limitNum)
       .exec();
+
+    const totalCount = await QuizSubmissionModel.countDocuments(filter).exec();
 
     if (!submissions || submissions.length === 0) {
       return res.status(404).json({ message: "No quiz submissions found" });
     }
 
-    res.status(200).json(submissions);
+    res.status(200).json({
+      submissions,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        totalCount,
+        totalPages: Math.ceil(totalCount / limitNum),
+      },
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "Error retrieving quiz submissions",
-        error: error.message,
-      });
+    res.status(500).json({
+      message: "Error retrieving quiz submissions",
+      error: error.message,
+    });
   }
 };

@@ -2,6 +2,7 @@ const Teacher = require("../models/southeast-teachers");
 const AnambraTeacher = require("../models/anambra-teachers");
 const { validationResult } = require("express-validator");
 const WeeklyQuizModel = require("../models/weekly-quiz");
+const QuizSubmissionModel = require("../models/quiz-submission");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
@@ -96,6 +97,7 @@ exports.getStudentById = async (req, res) => {
 };
 
 exports.verifyQuizAccess = async (req, res) => {
+  console.log("Route hit");
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -103,12 +105,26 @@ exports.verifyQuizAccess = async (req, res) => {
 
   const { email, quizCode } = req.body;
 
+  console.log(email);
+
   try {
-    // Check if a student exists with the given email and quiz code
     const student = await WeeklyQuizModel.findOne({ email, quizCode });
 
     if (!student) {
       return res.status(400).json({ message: "Invalid email or quiz code." });
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const alreadySubmitted = await QuizSubmissionModel.findOne({
+      email,
+      weekIdentifier: today,
+    });
+
+    console.log(alreadySubmitted);
+
+    if (alreadySubmitted) {
+      return res.status(400).json({ message: "You have already taken this week's quiz!!" });
     }
 
     res.status(200).json({ message: "Access granted. Proceeding to the quiz...", student });

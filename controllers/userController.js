@@ -31,9 +31,9 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+roleAccess"); // Ensure roleAccess is included
+    const user = await User.findOne({ email }).select("+roleAccess");
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Invalid email or password" });
     }
 
     console.log("User Found:", user); // Debugging
@@ -54,7 +54,7 @@ exports.loginUser = async (req, res) => {
     res.status(200).json({ 
       message: "Login successful. Redirecting...", 
       token, 
-      roleAccess: user.roleAccess || "No role assigned" // Prevent undefined values
+      roleAccess: user.roleAccess || "No role assigned"
     });
   } catch (error) {
     console.error("Login Error:", error);

@@ -6,7 +6,8 @@ const {
   getQuestionById,
   updateQuestion,
   deleteQuestion,
-  submitQuiz
+  submitQuiz,
+  getQuizSubmissions
 } = require('../controllers/questionController');
 
 
@@ -15,6 +16,8 @@ router.post('/admin/questions', createQuestion);
 router.get('/admin/questions', getAllQuestions);
 
 router.post('/quiz/submit', submitQuiz);
+
+router.post('/quiz-submissions', getQuizSubmissions);
 
 router.get('/admin/questions/:id', getQuestionById);
 

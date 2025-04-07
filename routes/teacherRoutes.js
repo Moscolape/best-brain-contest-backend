@@ -6,7 +6,7 @@ const {
   registerStudent,
   verifyQuizAccess
 } = require("../controllers/teacherController");
-const upload = require("../config/multerConfig"); // Cloudinary Multer config
+const upload = require("../config/multerConfig");
 
 const router = express.Router();
 

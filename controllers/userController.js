@@ -2,7 +2,6 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
-// Register a new user with password encryption
 exports.registerUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -12,7 +11,6 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password before saving
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -26,7 +24,6 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-// User Login with password verification
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -36,29 +33,26 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    console.log("User Found:", user); // Debugging
+    console.log("User Found:", user);
 
-    // Compare entered password with hashed password in DB
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email, roleAccess: user.roleAccess }, 
+      { userId: user._id, email: user.email, roleAccess: user.roleAccess },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.status(200).json({ 
-      message: "Login successful. Redirecting...", 
-      token, 
-      roleAccess: user.roleAccess || "No role assigned"
+    res.status(200).json({
+      message: "Login successful. Redirecting...",
+      token,
+      roleAccess: user.roleAccess || "No role assigned",
     });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-

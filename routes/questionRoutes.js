@@ -7,7 +7,8 @@ const {
   updateQuestion,
   deleteQuestion,
   submitQuiz,
-  getQuizSubmissions
+  getQuizSubmissions,
+  getAllParticipants
 } = require('../controllers/questionController');
 
 
@@ -18,6 +19,8 @@ router.get('/admin/questions', getAllQuestions);
 router.post('/quiz/submit', submitQuiz);
 
 router.get('/quiz-submissions', getQuizSubmissions);
+
+router.get("/quiz-participants", getAllParticipants);
 
 router.get('/admin/questions/:id', getQuestionById);
 

@@ -19,7 +19,7 @@ const beneficiarySchema = new mongoose.Schema(
     ss2: { type: String, enum: ["Paid", "Not Paid"], required: true },
     ss3: { type: String, enum: ["Paid", "Not Paid"], required: true },
     seniorWAEC: { type: String, enum: ["Paid", "Not Paid"], required: true },
-    beneficiaryCode: { type: String, unique: true, required: true }, // DIPF Code
+    beneficiaryCode: { type: String, unique: true, required: true },
   },
   { timestamps: true }
 );

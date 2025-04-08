@@ -120,12 +120,10 @@ exports.submitQuiz = async (req, res) => {
   try {
     const { answers, email } = req.body;
 
-    // Validate that email is provided
     if (!email) {
       return res.status(400).json({ message: "Email is required" });
     }
 
-    // Find the user in the WeeklyQuizParticipants collection using the email
     const user = await WeeklyQuizModel.findOne({ email });
 
     if (!user) {
@@ -134,15 +132,13 @@ exports.submitQuiz = async (req, res) => {
         .json({ message: "User not found with this email" });
     }
 
-    // Get the question IDs from the answers object
     const questionIds = Object.keys(answers);
-    // Fetch the question details from the Question collection
+
     const questions = await Question.find({ _id: { $in: questionIds } });
 
     let score = 0;
     let totalPoints = 0;
 
-    // Loop through each question to calculate score and total points
     for (const question of questions) {
       const userAnswer = answers[question._id];
       totalPoints += question.points || 10;
@@ -163,24 +159,20 @@ exports.submitQuiz = async (req, res) => {
       }
     }
 
-    // Calculate the percentage
     const percentage = (score / totalPoints) * 100;
     const now = new Date();
     const weekIdentifier = now.toISOString().split("T")[0];
 
-    // Create a new quiz submission object
     const submission = new QuizSubmissionModel({
-      email: user._id, // Store the user's ObjectId instead of email
+      email: user._id,
       score: Math.round(score),
       percentage: Math.round(percentage),
       totalPoints,
       weekIdentifier,
     });
 
-    // Save the quiz submission to the database
     await submission.save();
 
-    // Set up nodemailer transporter for sending the results email
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -189,8 +181,7 @@ exports.submitQuiz = async (req, res) => {
       },
     });
 
-    // Build the detailed breakdown for the quiz result
-    let breakdownHtml = "<h4>Quiz Breakdown:</h4><ul>";
+    let breakdownHtml = "<h4>BBC Quiz Breakdown:</h4><ul>";
     for (const question of questions) {
       const userAnswer = answers[question._id];
       const isCorrect =
@@ -220,28 +211,29 @@ exports.submitQuiz = async (req, res) => {
     }
     breakdownHtml += "</ul>";
 
-    // Set up the email options
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Your Quiz Score – Weekly Challenge",
       html: ` 
-    <h3>Hi ${user.fullName},</h3>
-    <p>Thank you for taking this week's quiz!</p>
-    <p><strong>Your Score:</strong> ${Math.round(
-      score
-    )} / ${totalPoints} (${Math.round(percentage)}%)</p>
-    ${breakdownHtml}
-    <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs">Check the weekly champions page</a> to find out!</p>
-    <p>Keep learning and competing 🚀</p>
-    <p>Best regards,<br/>The BBC Quiz Team</p>
-  `,
+        <h3>Hi ${user.fullName},</h3>
+        <p>Thank you for taking this week's quiz!</p>
+        <p><strong>Your Score:</strong> ${Math.round(
+          score
+        )} / ${totalPoints} (${Math.round(percentage)}%)</p>
+        ${breakdownHtml}
+        <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs">Check the weekly champions page</a> to find out!</p>
+        <p>Keep learning and competing 🚀</p>
+        <p>Best regards,<br/>The BBC Quiz Team</p>
+    
+        <hr style="margin-top: 30px;"/>
+        <p style="font-size: 14px; color: #666;">Proudly sponsored by</p>
+        <img src="https://akpoazaafoundation.org/assets/Akpoazaa%20Foundation%20Logo-CKIMWbzR.png" alt="Akpoazaa Foundation" style="height: 40px;"/>
+      `,
     };
 
-    // Send the result email to the user
     await transporter.sendMail(mailOptions);
 
-    // Respond with the quiz submission result
     res.status(200).json({
       message: "Quiz submitted successfully and email sent!",
       score: Math.round(score),
@@ -307,5 +299,29 @@ exports.getQuizSubmissions = async (req, res) => {
       message: "Error retrieving quiz submissions",
       error: error.message,
     });
+  }
+};
+
+exports.getAllParticipants = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const total = await WeeklyQuizModel.countDocuments();
+    const participants = await WeeklyQuizModel.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalParticipants: total,
+      participants,
+    });
+  } catch (error) {
+    console.error("Error fetching participants:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

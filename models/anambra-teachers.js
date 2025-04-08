@@ -28,7 +28,7 @@ const teacherSchema = new mongoose.Schema(
       required: true,
     },
 
-    certifications: { type: String }, // Optional field
+    certifications: { type: String },
     motivation: { type: String, required: true },
     declaration: { type: Boolean, required: true },
   },

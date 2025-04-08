@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 
 exports.registerStudent = async (req, res) => {
-  // Validate request data
+
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.log("Validation Errors:", errors.array());
@@ -19,10 +19,8 @@ exports.registerStudent = async (req, res) => {
   try {
     const { fullName, email } = req.body;
 
-    // Generate an 8-character alphanumeric uppercase code
     const quizCode = crypto.randomBytes(4).toString("hex").toUpperCase();
 
-    // Create new student entry
     const newStudent = new WeeklyQuizModel({
       ...req.body,
       quizCode,
@@ -30,7 +28,6 @@ exports.registerStudent = async (req, res) => {
 
     await newStudent.save();
 
-    // Send an email with quiz details
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -73,7 +70,6 @@ exports.registerStudent = async (req, res) => {
   }
 };
 
-// Get all registered students
 exports.getAllStudents = async (req, res) => {
   try {
     const students = await WeeklyQuizModel.find();
@@ -83,7 +79,6 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
-// Get a single student by ID
 exports.getStudentById = async (req, res) => {
   try {
     const student = await WeeklyQuizModel.findById(req.params.id);
@@ -151,7 +146,6 @@ exports.verifyQuizAccess = async (req, res) => {
   }
 };
 
-// Register a new teacher
 exports.registerTeacher = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -170,8 +164,8 @@ exports.registerTeacher = async (req, res) => {
     const uploadPassport = req.file.path.replace("\\", "/");
 
     const newTeacher = new Teacher({
-      ...req.body, // Include all form fields
-      uploadPassport, // Add passport URL
+      ...req.body,
+      uploadPassport
     });
 
     await newTeacher.save();
@@ -203,8 +197,8 @@ exports.registerAnambraTeacher = async (req, res) => {
     const uploadPassport = req.file.path.replace("\\", "/");
 
     const newTeacher = new AnambraTeacher({
-      ...req.body, // Include all form fields
-      uploadPassport, // Add passport URL
+      ...req.body,
+      uploadPassport,
     });
 
     await newTeacher.save();
@@ -218,7 +212,6 @@ exports.registerAnambraTeacher = async (req, res) => {
   }
 };
 
-// Get all registered teachers
 exports.getAllTeachers = async (req, res) => {
   try {
     const teachers = await Teacher.find();

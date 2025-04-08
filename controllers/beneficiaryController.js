@@ -3,7 +3,6 @@ const UpdateHistory = require("../models/updateHistory");
 
 const { validationResult } = require("express-validator");
 
-// Register a new beneficiary
 exports.registerBeneficiary = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -31,7 +30,6 @@ exports.registerBeneficiary = async (req, res) => {
       seniorWAEC,
     } = req.body;
 
-    // Generate unique Beneficiary Code
     const beneficiaryCode = `DIPF/${state}/${year}/${codeNo}`;
 
     const newBeneficiary = new Beneficiary({
@@ -66,37 +64,30 @@ exports.registerBeneficiary = async (req, res) => {
   }
 };
 
-// Get all beneficiaries with filtering and sorting options
 exports.getAllBeneficiaries = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const perPage = parseInt(req.query.perPage) || 10;
-  const { state, sortBy, year } = req.query; // Extract year from query
+  const { state, sortBy, year } = req.query;
 
   try {
-    let filter = {}; // Default: Fetch all
+    let filter = {};
 
-    // Apply state filter if provided
     if (state) filter.state = state;
 
-    // Apply year filter if provided
     if (year) filter.year = year;
 
-    // Determine sorting order
-    let sortOptions = {}; // Default: No sorting
+    let sortOptions = {};
     if (sortBy) {
-      if (sortBy === "beneficiaryName") sortOptions = { beneficiaryName: 1 }; // Sort by name (A-Z)
-      if (sortBy === "codeNo") sortOptions = { codeNo: 1 }; // Sort by Code No (Ascending)
+      if (sortBy === "beneficiaryName") sortOptions = { beneficiaryName: 1 };
+      if (sortBy === "codeNo") sortOptions = { codeNo: 1 };
     }
 
-    // Count only filtered beneficiaries
     const totalItems = await Beneficiary.countDocuments(filter);
 
-    // Fetch paginated and sorted data
     const beneficiariesQuery = Beneficiary.find(filter)
       .skip((page - 1) * perPage)
       .limit(perPage);
 
-    // Apply sorting only when sortBy is provided
     if (Object.keys(sortOptions).length > 0) {
       beneficiariesQuery.sort(sortOptions);
     }
@@ -106,7 +97,7 @@ exports.getAllBeneficiaries = async (req, res) => {
     res.status(200).json({
       message: "Beneficiaries fetched successfully!",
       beneficiaries,
-      totalItems, // Now correctly reflects filtered items
+      totalItems,
       currentPage: page,
       totalPages: Math.ceil(totalItems / perPage),
       perPage,
@@ -117,7 +108,6 @@ exports.getAllBeneficiaries = async (req, res) => {
   }
 };
 
-// Get a single beneficiary by beneficiaryCode
 exports.getSingleBeneficiary = async (req, res) => {
   const { beneficiaryCode } = req.params;
 
@@ -140,14 +130,12 @@ exports.getSingleBeneficiary = async (req, res) => {
   }
 };
 
-// Update a beneficiary by beneficiaryCode
 exports.updateBeneficiary = async (req, res) => {
   const { beneficiaryCode } = req.params;
 
   try {
     const decodedCode = decodeURIComponent(beneficiaryCode);
 
-    // Find the existing beneficiary record
     let beneficiary = await Beneficiary.findOne({
       beneficiaryCode: decodedCode,
     });
@@ -156,26 +144,22 @@ exports.updateBeneficiary = async (req, res) => {
       return res.status(404).json({ message: "Beneficiary not found" });
     }
 
-    // Store the previous data before updating
     const previousData = { ...beneficiary._doc };
 
-    // Save previous data into UpdateHistory collection
     await UpdateHistory.create({
       beneficiaryCode: decodedCode,
-      previousData
+      previousData,
     });
 
-    // Update only the provided fields
     Object.keys(req.body).forEach((key) => {
       beneficiary[key] = req.body[key];
     });
 
-    // Save the updated beneficiary
     await beneficiary.save();
 
     res.status(200).json({
       message: "Beneficiary updated successfully",
-      updatedData: beneficiary, // The new updated data
+      updatedData: beneficiary,
     });
   } catch (error) {
     console.error("Error updating beneficiary:", error);
@@ -184,21 +168,26 @@ exports.updateBeneficiary = async (req, res) => {
 };
 
 exports.getBeneficiaryUpdateHistory = async (req, res) => {
-    const { beneficiaryCode } = req.params;
-  
-    try {
-      const decodedCode = decodeURIComponent(beneficiaryCode);
-  
-      const history = await UpdateHistory.find({ beneficiaryCode: decodedCode }).sort({ updatedAt: -1 });
-  
-      if (!history) {
-        return res.status(404).json({ message: "No update history found for this beneficiary" });
-      }
-  
-      res.status(200).json({ message: "Update history fetched successfully", history });
-    } catch (error) {
-      console.error("Error fetching update history:", error);
-      res.status(500).json({ message: "Server Error", error: error.message });
+  const { beneficiaryCode } = req.params;
+
+  try {
+    const decodedCode = decodeURIComponent(beneficiaryCode);
+
+    const history = await UpdateHistory.find({
+      beneficiaryCode: decodedCode,
+    }).sort({ updatedAt: -1 });
+
+    if (!history) {
+      return res
+        .status(404)
+        .json({ message: "No update history found for this beneficiary" });
     }
-  };
-  
+
+    res
+      .status(200)
+      .json({ message: "Update history fetched successfully", history });
+  } catch (error) {
+    console.error("Error fetching update history:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};

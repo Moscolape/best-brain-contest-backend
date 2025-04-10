@@ -43,12 +43,12 @@ exports.registerStudent = async (req, res) => {
       html: `
         <div style="font-family: Calibri, sans-serif;">
           <img src="https://www.bestbraincontest.org/BBC%20LOGO.png" alt="Company Logo" width="150" />
-          <div style="font-size: 14">
-            <h4>Hello ${fullName},</h4>
+          <div style="font-size: 16">
+            <h3>Hello ${fullName},</h3>
             <p>Thank you for registering for the weekly online quiz.</p>
             <p><strong>Quiz Date:</strong> Every Saturday starting from April 12, 2025.</p>
             <p><strong>Quiz Time:</strong> 6pm every Saturday</p>
-            <p><strong>Your Access Code:</strong> <span style="font-size: 20px; font-weight: bold; color: #007bff;">${quizCode}</span></p>
+            <p><strong>Your Access Code:</strong> <span style="font-size: 18px; font-weight: bold; color: #007bff;">${quizCode}</span></p>
             <p>Click the link below to access the quiz:</p>
             <a href="${process.env.QUIZ_PAGE_URL}" style="display: inline-block; padding: 10px 15px; background: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Go to Quiz</a>
             <p>Best of luck!</p>

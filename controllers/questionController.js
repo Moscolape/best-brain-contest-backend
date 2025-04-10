@@ -218,16 +218,16 @@ exports.submitQuiz = async (req, res) => {
       html: ` 
         <h3>Hi ${user.fullName},</h3>
         <p>Thank you for taking this week's quiz!</p>
-        <p><strong>Your Score:</strong> ${Math.round(
+        <p><strong>Your scored</strong> ${Math.round(
           score
-        )} / ${totalPoints} (${Math.round(percentage)}%)</p>
+        )} out of ${totalPoints} points.</p>
         ${breakdownHtml}
         <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs">Check the weekly champions page</a> to find out!</p>
         <p>Keep learning and competing 🚀</p>
         <p>Best regards,<br/>The BBC Quiz Team</p>
     
         <hr style="margin-top: 30px;"/>
-        <p style="font-size: 14px; color: #666;">Proudly sponsored by</p>
+        <p style="font-size: 14px; color: #666;">Proudly sponsored by AKPOAZAA FOUNDATION</p>
         <img src="https://akpoazaafoundation.org/assets/Akpoazaa%20Foundation%20Logo-CKIMWbzR.png" alt="Akpoazaa Foundation" style="height: 40px;"/>
       `,
     };

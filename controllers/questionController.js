@@ -218,9 +218,9 @@ exports.submitQuiz = async (req, res) => {
       html: ` 
         <h3>Hi ${user.fullName},</h3>
         <p>Thank you for taking this week's quiz!</p>
-        <p><strong>Your scored</strong> ${Math.round(
+        <p>You scored <strong>${Math.round(
           score
-        )} out of ${totalPoints} points.</p>
+        )} out of ${totalPoints}</strong> points.</p>
         ${breakdownHtml}
         <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs">Check the weekly champions page</a> to find out!</p>
         <p>Keep learning and competing 🚀</p>

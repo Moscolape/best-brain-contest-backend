@@ -274,6 +274,7 @@ exports.getQuizSubmissions = async (req, res) => {
         "email",
         "fullName gender dob myClass phoneNumber schoolName stateOfSchool townOfSchool lgaOfSchool schoolNumber"
       )
+      .sort({ score: -1, submittedAt: 1 })
       .skip(skip)
       .limit(limitNum)
       .exec();

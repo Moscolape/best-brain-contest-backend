@@ -50,13 +50,11 @@ exports.getAllQuestions = async (req, res) => {
     const parsedLimit = parseInt(limit, 10);
     const skip = (parsedPage - 1) * parsedLimit;
 
-    // First, sort all by day DESC and apply pagination
     const questions = await Question.find(filter)
       .sort({ day: -1 })
       .skip(skip)
       .limit(parsedLimit);
 
-    // Then, sort the current page's results by createdAt ASC
     const sortedQuestions = questions.sort(
       (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
     );

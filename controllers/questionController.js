@@ -39,19 +39,42 @@ exports.createQuestion = async (req, res) => {
 
 exports.getAllQuestions = async (req, res) => {
   try {
-    const { day } = req.query;
+    const { day, page = 1, limit = 10 } = req.query;
 
     const filter = {};
     if (day) {
       filter.day = day;
     }
 
-    const questions = await Question.find(filter);
-    res.status(200).json(questions);
+    const parsedPage = parseInt(page, 10);
+    const parsedLimit = parseInt(limit, 10);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    // First, sort all by day DESC and apply pagination
+    const questions = await Question.find(filter)
+      .sort({ day: -1 })
+      .skip(skip)
+      .limit(parsedLimit);
+
+    // Then, sort the current page's results by createdAt ASC
+    const sortedQuestions = questions.sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
+
+    const totalCount = await Question.countDocuments(filter);
+    const totalPages = Math.ceil(totalCount / parsedLimit);
+
+    res.status(200).json({
+      questions: sortedQuestions,
+      totalPages,
+      currentPage: parsedPage,
+      totalCount,
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error retrieving questions", error: error.message });
+    res.status(500).json({
+      message: "Error retrieving questions",
+      error: error.message,
+    });
   }
 };
 

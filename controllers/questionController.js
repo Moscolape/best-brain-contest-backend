@@ -243,7 +243,7 @@ exports.submitQuiz = async (req, res) => {
           score
         )} out of ${totalPoints}</strong> points.</p>
         ${breakdownHtml}
-        <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs">Check the weekly champions page</a> to find out!</p>
+        <p>Want to see if you're the champion for this week? <a href="https://bestbraincontest.org/programs/weekly-quiz-champions">Check the weekly champions page</a> to find out!</p>
         <p>Keep learning and competing 🚀</p>
         <p>Best regards,<br/>The BBC Quiz Team</p>
     
@@ -345,5 +345,68 @@ exports.getAllParticipants = async (req, res) => {
   } catch (error) {
     console.error("Error fetching participants:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.getWeeklyChampions = async (req, res) => {
+  try {
+
+    const weeks = await QuizSubmissionModel.distinct("weekIdentifier");
+
+    const champions = [];
+
+    for (const week of weeks) {
+      const topScorers = await QuizSubmissionModel.find({
+        weekIdentifier: week,
+        $expr: { $eq: ["$score", "$totalPoints"] },
+      })
+        .sort({ submittedAt: 1 })
+        .limit(1);
+
+      if (topScorers.length === 0) continue;
+
+      const winnerSubmission = topScorers[0];
+
+      const participant = await WeeklyQuizModel.findById(
+        winnerSubmission.email
+      );
+
+      if (!participant) continue;
+
+      const submittedAt = new Date(winnerSubmission.submittedAt);
+
+      const sixPm = new Date(
+        submittedAt.getFullYear(),
+        submittedAt.getMonth(),
+        submittedAt.getDate(),
+        18,
+        0,
+        0,
+        0
+      );
+
+      let timeCompletedMs = submittedAt - sixPm;
+
+      const minutes = Math.floor(timeCompletedMs / 60000);
+      const seconds = Math.floor((timeCompletedMs % 60000) / 1000);
+      const timeCompleted = `${minutes}m ${seconds}s`;
+
+      champions.push({
+        week,
+        name: participant.fullName,
+        school: participant.schoolName,
+        phone: participant.phoneNumber,
+        gender: participant.gender,
+        class: participant.myClass,
+        score: winnerSubmission.score,
+        timeCompleted,
+        location: `${participant.lgaOfSchool}, ${participant.townOfSchool}, ${participant.stateOfSchool}`,
+      });
+    }
+
+    return res.json(champions);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
   }
 };

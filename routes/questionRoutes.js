@@ -8,7 +8,8 @@ const {
   deleteQuestion,
   submitQuiz,
   getQuizSubmissions,
-  getAllParticipants
+  getAllParticipants,
+  getWeeklyChampions
 } = require('../controllers/questionController');
 
 
@@ -21,6 +22,8 @@ router.post('/quiz/submit', submitQuiz);
 router.get('/quiz-submissions', getQuizSubmissions);
 
 router.get("/quiz-participants", getAllParticipants);
+
+router.get("/weekly-champions", getWeeklyChampions);
 
 router.get('/admin/questions/:id', getQuestionById);
 

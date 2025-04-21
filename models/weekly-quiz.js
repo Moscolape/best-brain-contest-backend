@@ -21,5 +21,7 @@ const weeklyQuizSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+weeklyQuizSchema.index({ email: 1, quizCode: 1 }); 
+
 const WeeklyQuizModel = mongoose.model("WeeklyQuizParticipants", weeklyQuizSchema);
 module.exports = WeeklyQuizModel;

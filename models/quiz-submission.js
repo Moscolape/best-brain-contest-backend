@@ -28,5 +28,7 @@ const quizSubmissionSchema = new mongoose.Schema({
   },
 });
 
+quizSubmissionSchema.index({ email: 1, weekIdentifier: 1 }); 
+
 const QuizSubmissionModel = mongoose.model("QuizSubmission", quizSubmissionSchema);
 module.exports = QuizSubmissionModel;

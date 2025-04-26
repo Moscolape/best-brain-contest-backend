@@ -10,11 +10,8 @@ exports.registerStudent = async (req, res) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log("Validation Errors:", errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
-
-  console.log("Request Body:", req.body);
 
   try {
     const { fullName, email } = req.body;
@@ -92,15 +89,12 @@ exports.getStudentById = async (req, res) => {
 };
 
 exports.verifyQuizAccess = async (req, res) => {
-  console.log("Route hit");
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
   const { email, quizCode } = req.body;
-  console.log("Student Email:", email);
 
   try {
     const student = await WeeklyQuizModel.findOne({ email, quizCode });
@@ -115,8 +109,6 @@ exports.verifyQuizAccess = async (req, res) => {
       email: student._id,
       weekIdentifier: today,
     });
-
-    console.log("Already Submitted:", alreadySubmitted);
 
     if (alreadySubmitted) {
       return res
@@ -149,12 +141,8 @@ exports.verifyQuizAccess = async (req, res) => {
 exports.registerTeacher = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log("Validation Errors:", errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
-
-  console.log("Request Body:", req.body);
-  console.log("Uploaded File:", req.file);
 
   if (!req.file) {
     return res.status(400).json({ message: "Passport file is missing!" });
@@ -182,12 +170,8 @@ exports.registerTeacher = async (req, res) => {
 exports.registerAnambraTeacher = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log("Validation Errors:", errors.array());
     return res.status(400).json({ errors: errors.array() });
   }
-
-  console.log("Request Body:", req.body);
-  console.log("Uploaded File:", req.file);
 
   if (!req.file) {
     return res.status(400).json({ message: "Passport file is missing!" });

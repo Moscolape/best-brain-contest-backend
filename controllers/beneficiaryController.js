@@ -119,7 +119,6 @@ exports.getSingleBeneficiary = async (req, res) => {
     });
 
     if (!beneficiary) {
-      console.log("Beneficiary not found in database.");
       return res.status(404).json({ message: "Beneficiary not found" });
     }
 

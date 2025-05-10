@@ -16,9 +16,9 @@ const allowedOrigins = ["http://localhost:5173", "https://bestbraincontest.org",
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, origin); // ✅ Allow the request if the origin is in the list
+      callback(null, origin);
     } else {
-      callback(new Error("Not allowed by CORS")); // ❌ Reject if not in the list
+      callback(new Error("Not allowed by CORS"));
     }
   },
   methods: ["POST", "GET", "PUT", "DELETE"],

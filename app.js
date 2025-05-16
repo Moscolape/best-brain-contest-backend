@@ -11,7 +11,7 @@ const questionRoutes = require("./routes/questionRoutes");
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = ["http://localhost:5173", "https://bestbraincontest.org", "http://localhost:5174", "https://www.bestbraincontest.org"];
+const allowedOrigins = ["http://localhost:5173", "https://deimperialphilanthropicfamily.org", "https://bestbraincontest.org", "http://localhost:5174", "https://www.bestbraincontest.org"];
 
 app.use(cors({
   origin: (origin, callback) => {
